@@ -34,7 +34,7 @@ from setuptools import setup
 
 setup(
     name='keria',
-    version='0.1.1',  # also change in src/keria/__init__.py
+    version='0.2.0-dev0',  # also change in src/keria/__init__.py
     license='Apache Software License 2.0',
     description='KERIA: KERI Agent in the cloud',
     long_description="KERIA: KERI Agent in the cloud.",
@@ -73,10 +73,10 @@ setup(
         "resolver",
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
-    python_requires='>=3.12.1',
+    python_requires='>=3.12.2',
     install_requires=[
-        'hio>=0.6.9',
-        'keri @ git+https://git@github.com/weboftrust/keripy.git@development',
+        'hio>=0.6.12',
+        'keri>=1.2.0-dev0',
         'mnemonic>=0.20',
         'multicommand>=1.0.0',
         'falcon>=3.1.3',

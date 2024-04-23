@@ -18,6 +18,7 @@ from hio.help import decking
 from keri import kering
 from keri.app import habbing, configing, oobiing, querying
 from keri.app.agenting import Receiptor
+from keri import core
 from keri.core import coring, serdering
 from keri.core.coring import MtrDex
 from keri.db import basing
@@ -26,6 +27,7 @@ from keri.vdr import credentialing
 
 from keria.app import agenting, aiding
 from keria.core import longrunning
+from keria.testing.testing_helper import SCRIPTS_DIR
 
 
 def test_setup_no_http():
@@ -62,14 +64,14 @@ def test_load_ends(helpers):
 
 def test_agency():
     salt = b'0123456789abcdef'
-    salter = coring.Salter(raw=salt)
-    cf = configing.Configer(name="keria", headDirPath="scripts", temp=True, reopen=True, clear=False)
+    salter = core.Salter(raw=salt)
+    cf = configing.Configer(name="keria", headDirPath=SCRIPTS_DIR, temp=True, reopen=True, clear=False)
 
     with habbing.openHby(name="keria", salt=salter.qb64, temp=True, cf=cf) as hby:
         hab = hby.makeHab(name="test")
 
         agency = agenting.Agency(name="agency", base="", bran=None, temp=True, configFile="keria",
-                                 configDir="scripts")
+                                 configDir=SCRIPTS_DIR)
         assert agency.cf is not None
         assert agency.cf.path.endswith("scripts/keri/cf/keria.json") is True
 
@@ -111,7 +113,7 @@ def test_agency():
             shutil.rmtree(f'/usr/local/var/keri/adb/{base}')
 
         agency = agenting.Agency(name="agency", base=base, bran=None, configFile="keria",
-                                 configDir="scripts")
+                                 configDir=SCRIPTS_DIR)
         assert agency.cf is not None
         assert agency.cf.path.endswith("scripts/keri/cf/keria.json") is True
 
@@ -126,7 +128,7 @@ def test_agency():
 
         # Rcreate the agency to see if agent is reloaded from disk
         agency = agenting.Agency(name="agency", base=base, bran=None, configFile="keria",
-                                 configDir="scripts")
+                                 configDir=SCRIPTS_DIR)
         doist.enter(doers=[agency])
 
         agent = agency.get(caid)
@@ -179,7 +181,7 @@ def test_boot_ends(helpers):
 
 def test_witnesser(helpers):
     salt = b'0123456789abcdef'
-    salter = coring.Salter(raw=salt)
+    salter = core.Salter(raw=salt)
 
     with habbing.openHby(name="keria", salt=salter.qb64, temp=True) as hby:
         witners = decking.Deck()
@@ -198,8 +200,8 @@ def test_witnesser(helpers):
 def test_keystate_ends(helpers):
     caid = "ELI7pg979AdhmvrjDeam2eAO2SR5niCgnjAJXJHtJose"
     salt = b'0123456789abcdef'
-    salter = coring.Salter(raw=salt)
-    cf = configing.Configer(name="keria", headDirPath="scripts", temp=True, reopen=True, clear=False)
+    salter = core.Salter(raw=salt)
+    cf = configing.Configer(name="keria", headDirPath=SCRIPTS_DIR, temp=True, reopen=True, clear=False)
 
     with habbing.openHby(name="keria", salt=salter.qb64, temp=True, cf=cf) as hby:
         hab = hby.makeHab(name="test")
@@ -235,7 +237,7 @@ def test_keystate_ends(helpers):
 
 def test_oobi_ends(seeder, helpers):
     with helpers.openKeria() as (agency, agent, app, client), \
-            habbing.openHby(name="wes", salt=coring.Salter(raw=b'wess-the-witness').qb64) as wesHby:
+            habbing.openHby(name="wes", salt=core.Salter(raw=b'wess-the-witness').qb64) as wesHby:
         wesHab = wesHby.makeHab(name="wes", transferable=False)
 
         result = client.simulate_get(path="/oobi/pal?role=witness")

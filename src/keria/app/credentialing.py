@@ -393,12 +393,6 @@ class CredentialQueryCollectionEnd:
         tags:
            - Credentials
         parameters:
-           - in: path
-             name: aid
-             schema:
-               type: string
-             required: true
-             description: identifier to load credentials for
            - in: query
              name: type
              schema:
@@ -546,13 +540,17 @@ class CredentialCollectionEnd:
         hab = agent.hby.habByName(name)
         if hab is None:
             raise falcon.HTTPNotFound(description="name is not a valid reference to an identifier")
-
-        creder = serdering.SerderACDC(sad=httping.getRequiredParam(body, "acdc"))
-        iserder = serdering.SerderKERI(sad=httping.getRequiredParam(body, "iss"))
-        if "ixn" in body:
-            anc = serdering.SerderKERI(sad=httping.getRequiredParam(body, "ixn"))
-        else:
-            anc = serdering.SerderKERI(sad=httping.getRequiredParam(body, "rot"))
+        try: 
+            creder = serdering.SerderACDC(sad=httping.getRequiredParam(body, "acdc"))
+            iserder = serdering.SerderKERI(sad=httping.getRequiredParam(body, "iss"))
+            if "ixn" in body:
+                anc = serdering.SerderKERI(sad=httping.getRequiredParam(body, "ixn"))
+            else:
+                anc = serdering.SerderKERI(sad=httping.getRequiredParam(body, "rot"))
+        except (kering.ValidationError, json.decoder.JSONDecodeError) as e:
+            rep.status = falcon.HTTP_400
+            rep.text = e.args[0]
+            return
 
         regk = iserder.ked['ri']
         if regk not in agent.rgy.tevers:
@@ -601,12 +599,6 @@ class CredentialResourceEnd:
            - Credentials
         parameters:
            - in: path
-             name: aid
-             schema:
-               type: string
-             required: true
-             description: The identifier to create
-           - in: path
              name: said
              schema:
                type: string
@@ -620,7 +612,8 @@ class CredentialResourceEnd:
                     schema:
                         description: Credential
                         type: object
-
+           400:
+             description: The requested credential was not found.
         """
         agent = req.context.agent
         accept = req.get_header("accept")
